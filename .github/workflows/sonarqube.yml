@@ -1,26 +1,56 @@
-name: Build
+name: Build and Analyze
 
 on:
   push:
     branches:
       - main
 
-
 jobs:
-  build:
-    name: Build
+  test-and-coverage:
+    name: Run Tests and Generate Coverage Report
     runs-on: ubuntu-latest
-    permissions: read-all
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run pytest with coverage
+        run: pytest --cov=./ --cov-report=xml
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  sonarqube-analysis:
+    name: SonarQube Analysis
+    needs: test-and-coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+      - name: Adjust paths in coverage report
+        run: |
+          sed -i 's|/home/runner/work/asg-scaler-lambda/asg-scaler-lambda/||g' coverage.xml
       - uses: sonarsource/sonarqube-scan-action@master
+        with:
+          args: >
+            -Dsonar.python.coverage.reportPaths=coverage.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
+      # Uncomment the following lines if you wish to fail your job when the Quality Gate is red. This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
       #   timeout-minutes: 5
       #   env:
