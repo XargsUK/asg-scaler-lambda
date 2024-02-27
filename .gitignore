@@ -4,3 +4,4 @@ __pycache__/
 lambda-env/
 build.sh
 function.zip
+.pytest_cache/
