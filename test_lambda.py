@@ -169,4 +169,8 @@ def test_lambda_handler_failure_min_greater_than_max(aws_resources, mock_put_job
             }
         }
     }
+    response = lambda_handler(event)
     
+    assert response['statusCode'] == 400
+    assert 'Validation Error' in response['body']
+    mock_put_job_failure_result.put_job_failure_result.assert_called_once_with(jobId='mock_job_id', failureDetails=ANY)
