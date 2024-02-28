@@ -27,7 +27,6 @@ jobs:
         with:
           name: coverage-report
           path: coverage.xml
-
   sonarqube-analysis:
     name: SonarQube Analysis
     needs: test-and-coverage
@@ -42,16 +41,12 @@ jobs:
           name: coverage-report
       - name: Adjust paths in coverage report
         run: |
-          sed -i 's|/home/runner/work/asg-scaler-lambda/asg-scaler-lambda/||g' coverage.xml
-      - uses: sonarsource/sonarqube-scan-action@master
+          sed -i 's|/github/workspace/||g' coverage.xml
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
         with:
           args: >
             -Dsonar.python.coverage.reportPaths=coverage.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # Uncomment the following lines if you wish to fail your job when the Quality Gate is red. This would typically be used to fail a deployment.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
