@@ -1,47 +1,70 @@
 import json
-from library.codepipeline_event import report_job_success, report_job_failure
-from library.codedeploy_helper import monitor_deployments
+import logging
+from library.codepipeline_event import report_job_success, report_job_failure, get_approval_token, approve_action
 from library.asg_helper import update_asg
-from datetime import datetime, timezone
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def lambda_handler(event, context):
-    job_id = event['CodePipeline.job']['id'] if 'CodePipeline.job' in event else None
-    invocation_time = datetime.now(timezone.utc)
+    logger.info(f"Received event: {event}")
+    if 'CodePipeline.job' in event:
+        return handle_codepipeline_event(event)
+    elif event.get('source') == 'aws.codedeploy' and event.get('detail', {}).get('state') == 'SUCCESS':
+        return handle_eventbridge_event(event)
+    else:
+        logger.warning('Event source not recognised.')
+        return {'statusCode': 400, 'body': 'Event source not recognised.'}
 
+def handle_codepipeline_event(event):
+    job_id = event['CodePipeline.job']['id'] if 'CodePipeline.job' in event else None
+    
+    user_parameters_str = event.get('CodePipeline.job', {}).get('data', {}).get('actionConfiguration', {}).get('configuration', {}).get('UserParameters', '{}')
     try:
-        user_parameters_str = event.get('CodePipeline.job', {}).get('data', {}).get('actionConfiguration', {}).get('configuration', {}).get('UserParameters', '{}')
         user_parameters = json.loads(user_parameters_str)
     except json.JSONDecodeError:
         report_job_failure(job_id, 'Invalid UserParameters format.')
+        logger.error(f"Invalid UserParameters format for job {job_id}.")
         return {'statusCode': 400, 'body': json.dumps('Invalid UserParameters format.')}
 
-    asg_name = user_parameters.get('asgName')
-    min_capacity = user_parameters.get('minCapacity')
-    desired_capacity = user_parameters.get('desiredCapacity')
-    max_capacity = user_parameters.get('maxCapacity')
-    application_name = user_parameters.get('applicationName')
-    deployment_group_name = user_parameters.get('deploymentGroupName')
+    params = (
+        user_parameters.get('asgName'), 
+        user_parameters.get('minCapacity'), 
+        user_parameters.get('desiredCapacity'), 
+        user_parameters.get('maxCapacity')
+    )
 
-    if not all([asg_name, min_capacity, desired_capacity, max_capacity, application_name, deployment_group_name]):
+    if not all(params) or any(x is None for x in params):
         report_job_failure(job_id, 'Missing required parameters.')
+        logger.error(f"Missing required parameters for job {job_id}.")
         return {'statusCode': 400, 'body': json.dumps('Missing required parameters.')}
 
     try:
-        # Update ASG capacities
-        message = update_asg(asg_name, min_capacity, desired_capacity, max_capacity)
-        print(message)
-
-        # Monitor deployments
-        success, status = monitor_deployments(application_name, deployment_group_name, invocation_time=invocation_time)
-        if success:
-            print("Deployment monitoring succeeded.")
-            report_job_success(job_id)
-            return {'statusCode': 200, 'body': json.dumps('ASG scaled and all deployments succeeded.')}
-        else:
-            print(f"Deployment monitoring failed due to: {status}")
-            report_job_failure(job_id, f"Deployment monitoring failed due to: {status}")
-            return {'statusCode': 400, 'body': json.dumps(f"Deployment monitoring failed due to: {status}")}
-
+        message = update_asg(*params)
+        report_job_success(job_id)
+        logger.info(f"Successfully processed CodePipeline job {job_id}: {message}")
+        return {'statusCode': 200, 'body': json.dumps(message)}
+    except ValueError as ve:
+        report_job_failure(job_id, str(ve))
+        logger.error(f"Validation Error for job {job_id}: {str(ve)}")
+        return {'statusCode': 400, 'body': json.dumps(f"Validation Error: {str(ve)}")}
     except Exception as e:
         report_job_failure(job_id, str(e))
+        logger.error(f"Error processing CodePipeline job {job_id}: {str(e)}")
         return {'statusCode': 500, 'body': json.dumps(f"Error: {str(e)}")}
+
+def handle_eventbridge_event(event):
+    logger.info(f"Processing EventBridge event: {event}")
+    pipeline_name = event.get('pipelineName')
+    stage_name = event.get('stageName')
+    action_name = event.get('actionName')
+    
+    token = get_approval_token(pipeline_name, stage_name, action_name)
+    if token:
+        result = approve_action(pipeline_name, stage_name, action_name, token)
+        logger.info(f"EventBridge event processed for pipeline {pipeline_name}. Result: {result}")
+        return result
+    else:
+        logger.warning(f"No approval token available or action not in a state that can be approved for pipeline {pipeline_name}.")
+        return {'statusCode': 400, 'body': 'Approval token not found.'}

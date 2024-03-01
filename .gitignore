@@ -5,4 +5,4 @@ lambda-env/
 build.sh
 function.zip
 .pytest_cache/
-asg-scaler-lambda-*.zip
+asg-scaler-lambda*.zip
