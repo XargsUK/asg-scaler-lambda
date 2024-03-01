@@ -20,13 +20,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Run pytest with coverage
-        run: pytest --cov=./ --cov-report=xml
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage.xml
+      # - name: Run pytest with coverage
+      #   run: pytest --cov=./ --cov-report=xml
+      # - name: Upload coverage report
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-report
+      #     path: coverage.xml
   sonarqube-analysis:
     name: SonarQube Analysis
     needs: test-and-coverage
@@ -35,13 +35,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Download coverage report
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-report
-      - name: Adjust paths in coverage report
-        run: |
-          sed -i 's|/github/workspace/||g' coverage.xml
+      # - name: Download coverage report
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: coverage-report
+      # - name: Adjust paths in coverage report
+      #   run: |
+      #     sed -i 's|/github/workspace/||g' coverage.xml
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:

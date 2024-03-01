@@ -73,7 +73,7 @@ def test_lambda_handler_success(aws_resources, mock_put_job_success_result):
         }
     }
     
-    response = lambda_handler(event)
+    response = lambda_handler(event, None)
     
     assert response['statusCode'] == 200
     assert 'Successfully updated ASG' in response['body']
@@ -95,7 +95,7 @@ def test_lambda_handler_failure_missing_parameters(aws_resources, mock_put_job_f
         }
     }
     
-    response = lambda_handler(event)
+    response = lambda_handler(event, None)
     
     assert response['statusCode'] == 400
     assert 'Missing required parameters' in response['body']
@@ -120,7 +120,7 @@ def test_lambda_handler_failure_min_greater_than_desired(aws_resources, mock_put
         }
     }
     
-    response = lambda_handler(event)
+    response = lambda_handler(event, None)
     
     assert response['statusCode'] == 400
     assert 'Validation Error' in response['body']
@@ -145,7 +145,7 @@ def test_lambda_handler_failure_desired_greater_than_max(aws_resources, mock_put
         }
     }
     
-    response = lambda_handler(event)
+    response = lambda_handler(event, None)
     
     assert response['statusCode'] == 400
     assert 'Validation Error' in response['body']
@@ -169,7 +169,7 @@ def test_lambda_handler_failure_min_greater_than_max(aws_resources, mock_put_job
             }
         }
     }
-    response = lambda_handler(event)
+    response = lambda_handler(event, None)
     
     assert response['statusCode'] == 400
     assert 'Validation Error' in response['body']
