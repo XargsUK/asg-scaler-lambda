@@ -5,6 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+
 def update_asg(asg_name, min_capacity, desired_capacity, max_capacity):
     """
     Update the specified Auto Scaling Group's capacities.

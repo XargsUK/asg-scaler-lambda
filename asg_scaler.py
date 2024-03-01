@@ -14,8 +14,8 @@ def lambda_handler(event, context):
     elif event.get('source') == 'aws.codedeploy' and event.get('detail', {}).get('state') == 'SUCCESS':
         return handle_eventbridge_event(event)
     else:
-        logger.warning('Event source not recognized.')
-        return {'statusCode': 400, 'body': 'Event source not recognized.'}
+        logger.warning('Event source not recognised.')
+        return {'statusCode': 400, 'body': 'Event source not recognised.'}
 
 def handle_codepipeline_event(event):
     job_id = event['CodePipeline.job']['id'] if 'CodePipeline.job' in event else None

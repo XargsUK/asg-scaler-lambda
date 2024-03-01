@@ -52,23 +52,55 @@ def approve_action(pipeline_name, stage_name, action_name, token):
         logger.debug(f"Error submitting approval for action {action_name} in pipeline {pipeline_name}: {str(e)}")
         return {'statusCode': 500, 'body': json.dumps(f"Error processing approval: {str(e)}")}
     
+def find_action_in_stage(stage, action_name):
+    """
+    Find an action by name in a given stage.
+    :param stage: The stage dictionary
+    :param action_name: The name of the action to find
+    :return: The action dictionary if found, else None
+    """
+    for action in stage['actionStates']:
+        if action['actionName'] == action_name:
+            return action
+    return None
+
+def extract_token_if_available(action):
+    """
+    Extract the approval token from an action if it is available and the action is in progress.
+    :param action: The action dictionary
+    :return: The approval token if available and action is in progress, else None
+    """
+    latest_execution = action.get('latestExecution', {})
+    if latest_execution.get('status') == 'InProgress' and 'token' in latest_execution:
+        return latest_execution['token']
+    return None
+
 def get_approval_token(pipeline_name, stage_name, action_name):
+    """
+    Get the approval token for a specific action in a pipeline stage if it's available.
+    :param pipeline_name: The name of the pipeline
+    :param stage_name: The name of the stage
+    :param action_name: The name of the action
+    :return: The approval token if found, else None
+    """
     try:
         pipeline_state = client.get_pipeline_state(name=pipeline_name)
-        for stage in pipeline_state['stageStates']:
-            if stage['stageName'] == stage_name:
-                for action in stage['actionStates']:
-                    if action['actionName'] == action_name:
-                        latest_execution = action.get('latestExecution', {})
-                        if latest_execution.get('status') == 'InProgress' and 'token' in latest_execution:
-                            logger.debug(f"Found approval token for action {action_name} in stage {stage_name} of pipeline {pipeline_name}.")
-                            return latest_execution['token']
-                        else:
-                            logger.debug(f"Action {action_name} in stage {stage_name} of pipeline {pipeline_name} is not awaiting approval or no token is available.")
-                            return None
     except Exception as e:
         logger.debug(f"Error getting pipeline state for {pipeline_name}: {str(e)}")
         return None
+
+    for stage in pipeline_state['stageStates']:
+        if stage['stageName'] != stage_name:
+            continue
+
+        action = find_action_in_stage(stage, action_name)
+        if action:
+            token = extract_token_if_available(action)
+            if token:
+                logger.debug(f"Found approval token for action {action_name} in stage {stage_name} of pipeline {pipeline_name}.")
+                return token
+            else:
+                logger.debug(f"Action {action_name} in stage {stage_name} of pipeline {pipeline_name} is not awaiting approval or no token is available.")
 
     logger.debug(f"No approval token found for action {action_name} in stage {stage_name} of pipeline {pipeline_name}.")
     return None
