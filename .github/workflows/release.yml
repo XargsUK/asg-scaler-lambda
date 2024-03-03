@@ -1,14 +1,14 @@
-name: "Dry-run TestPyPI release on demand"
+name: "PyPI release on demand"
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Dry-run release version identifier"
+        description: "PyPI release on demand"
         required: true
 
 jobs:
   dry-run-release:
-    name: "Dry run Release v${{ github.event.inputs.version }}"
+    name: "PyPI release v${{ github.event.inputs.version }}"
     if: ${{ github.repository_owner == 'XargsUK' }}
     runs-on: ubuntu-latest
     steps:
