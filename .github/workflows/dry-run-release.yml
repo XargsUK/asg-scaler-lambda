@@ -52,4 +52,9 @@ jobs:
         run: |
           poetry config repositories.testpypi https://test.pypi.org/legacy/
           poetry config http-basic.testpypi __token__ ${{ secrets.TEST_PYPI_PASSWORD }}
+      - name: Publish to TestPyPI
+        env:
+          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.POETRY_PYPI_TOKEN_TESTPYPI }}
+        run: |
           poetry publish --repository testpypi -n
+    
