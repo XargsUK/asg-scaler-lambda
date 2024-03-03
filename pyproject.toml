@@ -32,12 +32,12 @@ testpaths = [ "tests",]
 [tool.poetry.group.github-actions]
 optional = true
 
+[tool.poetry.group.github-actions.dependencies]
+pytest-github-actions-annotate-failures = "^0.1.7"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
 flake8 = "^7.0.0"
 coverage = "^7.4.3"
 toml = "^0.10.2"
-
-[tool.poetry.group.github-actions.dependencies]
-pytest-github-actions-annotate-failures = "^0.1.7"
