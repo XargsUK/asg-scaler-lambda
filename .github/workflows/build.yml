@@ -23,8 +23,8 @@ jobs:
           poetry run flake8 . --exit-zero --tee --output-file=flake8-report
       - name: Test with pytest and coverage
         run: |
-          coverage run -m pytest --junitxml=pytest-report.xml tests
-          coverage xml -o coverage-pytest.xml
+          poetry run coverage run -m pytest --junitxml=pytest-report.xml tests
+          poetry run coverage xml -o coverage-pytest.xml
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
