@@ -39,7 +39,12 @@ def update_asg(asg_name, min_capacity, desired_capacity, max_capacity):
             MaxSize=max_capacity,
             DesiredCapacity=desired_capacity
         )
-        success_message = f"Successfully updated ASG '{asg_name}' settings: Min={min_capacity}, Desired={desired_capacity}, Max={max_capacity}."
+        success_message = (
+            f"Successfully updated ASG '{asg_name}' settings: "
+            f"Min={min_capacity}, "
+            f"Desired={desired_capacity}, "
+            f"Max={max_capacity}."
+        )
         logger.debug(success_message)
         return success_message
     except Exception as e:
@@ -54,7 +59,8 @@ def validate_capacities(min_capacity, desired_capacity, max_capacity):
     :param min_capacity: The minimum size of the ASG
     :param desired_capacity: The desired size of the ASG
     :param max_capacity: The maximum size of the ASG
-    :return: A tuple (bool, str) where the first element indicates success/failure, and the second is the error message (if any)
+    :return: A tuple (bool, str) where the first element indicates success/failure, and the second is the error message
+
     """
     if min_capacity < 0 or desired_capacity < 0 or max_capacity < 0:
         return False, "Capacity settings cannot be negative."

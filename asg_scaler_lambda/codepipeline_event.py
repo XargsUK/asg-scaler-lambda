@@ -61,7 +61,11 @@ def approve_action(pipeline_name, stage_name, action_name, token):
             },
             token=token
         )
-        logger.debug(f"Approval submitted successfully for action {action_name} in stage {stage_name} of pipeline {pipeline_name}: {response}")
+        logger.debug(
+            f"Approval submitted successfully for action {action_name} in stage "
+            f"{stage_name} of pipeline {pipeline_name}: {response}"
+        )
+
         return {'statusCode': 200, 'body': json.dumps('Approval submitted successfully.')}
     except Exception as e:
         logger.debug(f"Error submitting approval for action {action_name} in pipeline {pipeline_name}: {str(e)}")
@@ -116,10 +120,21 @@ def get_approval_token(pipeline_name, stage_name, action_name):
         if action:
             token = extract_token_if_available(action)
             if token:
-                logger.debug(f"Found approval token for action {action_name} in stage {stage_name} of pipeline {pipeline_name}.")
+                logger.debug(
+                    f"Found approval token for action {action_name} in stage "
+                    f"{stage_name} of pipeline {pipeline_name}."
+                )
+
                 return token
             else:
-                logger.debug(f"Action {action_name} in stage {stage_name} of pipeline {pipeline_name} is not awaiting approval or no token is available.")
+                logger.debug(
+                    f"Action {action_name} in stage {stage_name} of pipeline {pipeline_name} "
+                    f"is not awaiting approval or no token is available."
+                )
 
-    logger.debug(f"No approval token found for action {action_name} in stage {stage_name} of pipeline {pipeline_name}.")
+    logger.debug(
+        f"No approval token found for action {action_name} in stage "
+        f"{stage_name} of pipeline {pipeline_name}."
+    )
+
     return None

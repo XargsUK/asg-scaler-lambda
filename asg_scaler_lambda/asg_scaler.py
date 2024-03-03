@@ -1,6 +1,9 @@
 import json
 import logging
-from asg_scaler_lambda.codepipeline_event import report_job_success, report_job_failure, get_approval_token, approve_action
+from asg_scaler_lambda.codepipeline_event import (
+    report_job_success, report_job_failure, 
+    get_approval_token, approve_action
+)
 from asg_scaler_lambda.asg_helper import update_asg
 
 # Configure logging
@@ -21,7 +24,14 @@ def lambda_handler(event, context):
 
 def handle_codepipeline_event(event):
     job_id = event['CodePipeline.job']['id'] if 'CodePipeline.job' in event else None
-    user_parameters_str = event.get('CodePipeline.job', {}).get('data', {}).get('actionConfiguration', {}).get('configuration', {}).get('UserParameters', '{}')
+
+    code_pipeline_job = event.get('CodePipeline.job', {})
+    job_data = code_pipeline_job.get('data', {})
+    action_configuration = job_data.get('actionConfiguration', {})
+    configuration = action_configuration.get('configuration', {})
+    user_parameters_str = configuration.get('UserParameters', '{}')
+
+
     try:
         user_parameters = json.loads(user_parameters_str)
     except json.JSONDecodeError:
@@ -68,5 +78,9 @@ def handle_eventbridge_event(event):
         logger.info(f"EventBridge event processed for pipeline {pipeline_name}. Result: {result}")
         return result
     else:
-        logger.warning(f"No approval token available or action not in a state that can be approved for pipeline {pipeline_name}.")
+        logger.warning(
+            f"No approval token available or action not in a state that can be "
+            f"approved for pipeline {pipeline_name}."
+        )
+
         return {'statusCode': 400, 'body': 'Approval token not found.'}
