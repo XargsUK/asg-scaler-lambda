@@ -1,37 +1,25 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "asg-scaler-lambda"
 version = "0.1.0"
 description = "Scales ASGs and authorises CodePipeline"
-authors = ["XargsUK <51077147+XargsUK@users.noreply.github.com>"]
-maintainers = ["XargsUK <51077147+XargsUK@users.noreply.github.com>"]
+authors = [ "XargsUK <51077147+XargsUK@users.noreply.github.com>",]
+maintainers = [ "XargsUK <51077147+XargsUK@users.noreply.github.com>",]
 license = "MIT"
 readme = "README.md"
-include = [{ path = "tests", format = "sdist" }]
 repository = "https://github.com/XargsUK/asg-scaler-lambda"
-keywords = ["aws", "lambda", "asg", "autoscaling", "codepipeline", "codedeploy", "scaling"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Topic :: Software Development :: Libraries",
-    "Topic :: Utilities"
-]
+keywords = [ "aws", "lambda", "asg", "autoscaling", "codepipeline", "codedeploy", "scaling",]
+classifiers = [ "Development Status :: 4 - Beta", "Intended Audience :: Developers", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.8", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10", "Topic :: Software Development :: Libraries", "Topic :: Utilities",]
+[[tool.poetry.include]]
+path = "tests"
+format = "sdist"
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
 boto3 = "^1.30"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0.2"
-pytest-cov = "^4.1.0"
-flake8 = "^7.0.0"
-coverage = "^7.4.3"
-toml = "^0.10.2"
 
 [tool.poetry.scripts]
 asg-scaler-lambda = "asg_scaler_lambda.asg_scaler:lambda_handler"
@@ -39,16 +27,17 @@ asg-scaler-lambda = "asg_scaler_lambda.asg_scaler:lambda_handler"
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
-testpaths = [
-    "tests"
-]
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+testpaths = [ "tests",]
 
 [tool.poetry.group.github-actions]
 optional = true
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.2"
+pytest-cov = "^4.1.0"
+flake8 = "^7.0.0"
+coverage = "^7.4.3"
+toml = "^0.10.2"
 
 [tool.poetry.group.github-actions.dependencies]
 pytest-github-actions-annotate-failures = "^0.1.7"
