@@ -46,15 +46,7 @@ jobs:
           add: "pyproject.toml"
           message: "Bump version to ${{ github.event.inputs.version }}"
           tag: "v${{ github.event.inputs.version }}"
-      - name: Publish to TestPyPI
-        env:
-          POETRY_PYPI_TOKEN_TEST: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: |
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
-          poetry config http-basic.testpypi __token__ ${{ secrets.TEST_PYPI_PASSWORD }}
-      - name: Publish to TestPyPI
-        env:
-          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.POETRY_PYPI_TOKEN_TESTPYPI }}
-        run: |
-          poetry publish --repository testpypi -n
-    
+      - name: Configure TestPyPI repository 
+        run: poetry config repositories.testpypi https://test.pypi.org/legacy/
+      - name: Configure TestPyPI API token
+        run: poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_KEY }}
