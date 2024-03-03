@@ -31,6 +31,7 @@ pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
 flake8 = "^7.0.0"
 coverage = "^7.4.3"
+toml = "^0.10.2"
 
 [tool.poetry.scripts]
 asg-scaler-lambda = "asg_scaler_lambda.asg_scaler:lambda_handler"
