@@ -6,6 +6,7 @@ import json
 # report_job_success unit tests
 ############################################
 
+
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_report_job_success_success(mock_get_client):
     # Create a mock client object
@@ -21,6 +22,7 @@ def test_report_job_success_success(mock_get_client):
 
     # Assert that put_job_success_result was called with the correct job ID
     mock_client.put_job_success_result.assert_called_once_with(jobId=job_id)
+
 
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_report_job_failure_exception(mock_get_client):
@@ -42,10 +44,10 @@ def test_report_job_failure_exception(mock_get_client):
         failureDetails={'message': message, 'type': 'JobFailed'}
     )
 
-
 ############################################
 # approve_action unit tests
 ############################################
+
 
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_approve_action_success(mock_get_client):
@@ -76,6 +78,7 @@ def test_approve_action_success(mock_get_client):
         token=token
     )
 
+
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_approve_action_failure(mock_get_client):
     # Setup mock client to raise an exception
@@ -104,6 +107,8 @@ def test_approve_action_failure(mock_get_client):
 ############################################
 # get_approval_token  unit tests
 ############################################
+
+
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_get_approval_token_success(mock_get_client):
     # Setup mock client and response
@@ -136,6 +141,7 @@ def test_get_approval_token_success(mock_get_client):
     assert token == 'test-token'
     mock_client.get_pipeline_state.assert_called_once_with(name=pipeline_name)
 
+
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_get_approval_token_no_token_available(mock_get_client):
     # Setup mock client to return a state without an available token
@@ -167,6 +173,7 @@ def test_get_approval_token_no_token_available(mock_get_client):
     assert token is None
     mock_client.get_pipeline_state.assert_called_once_with(name=pipeline_name)
 
+
 @patch('asg_scaler_lambda.codepipeline_event.get_codepipeline_client')
 def test_get_approval_token_api_exception(mock_get_client):
     # Setup mock client to raise an exception
@@ -188,6 +195,7 @@ def test_get_approval_token_api_exception(mock_get_client):
 # find_action_in_stage unit tests
 ############################################
 
+
 def test_find_action_in_stage_found():
     stage = {
         'actionStates': [
@@ -199,6 +207,7 @@ def test_find_action_in_stage_found():
     found_action = find_action_in_stage(stage, action_name)
     assert found_action is not None
     assert found_action['actionName'] == action_name
+
 
 def test_find_action_in_stage_not_found():
     stage = {
@@ -214,6 +223,7 @@ def test_find_action_in_stage_not_found():
 # extract_token_if_available unit tests
 ############################################
 
+
 def test_extract_token_if_available_with_token():
     action = {
         'actionName': 'test-action',
@@ -225,6 +235,7 @@ def test_extract_token_if_available_with_token():
     token = extract_token_if_available(action)
     assert token == 'test-token'
 
+
 def test_extract_token_if_available_without_token():
     action = {
         'actionName': 'test-action',
@@ -235,6 +246,7 @@ def test_extract_token_if_available_without_token():
     }
     token = extract_token_if_available(action)
     assert token is None
+
 
 def test_extract_token_if_available_wrong_status():
     action = {

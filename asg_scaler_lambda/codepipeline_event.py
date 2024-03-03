@@ -9,12 +9,14 @@ AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+
 def get_codepipeline_client():
     """
     Returns a boto3 client for AWS CodePipeline.
     This function can be modified to dynamically set the region or other client parameters if needed.
     """
     return boto3.client('codepipeline', region_name=AWS_REGION)
+
 
 def report_job_success(job_id):
     """
@@ -27,6 +29,7 @@ def report_job_success(job_id):
         logger.debug(f"Job {job_id} reported as success.")
     except Exception as e:
         logger.debug(f"Error reporting job success for {job_id}: {str(e)}")
+
 
 def report_job_failure(job_id, message):
     """
@@ -43,6 +46,7 @@ def report_job_failure(job_id, message):
         logger.debug(f"Job {job_id} reported as failure. Message: {message}")
     except Exception as e:
         logger.debug(f"Error reporting job failure for {job_id}: {str(e)}")
+
 
 def approve_action(pipeline_name, stage_name, action_name, token):
     client = get_codepipeline_client()
@@ -62,7 +66,8 @@ def approve_action(pipeline_name, stage_name, action_name, token):
     except Exception as e:
         logger.debug(f"Error submitting approval for action {action_name} in pipeline {pipeline_name}: {str(e)}")
         return {'statusCode': 500, 'body': json.dumps(f"Error processing approval: {str(e)}")}
-    
+
+
 def find_action_in_stage(stage, action_name):
     """
     Find an action by name in a given stage.
@@ -75,6 +80,7 @@ def find_action_in_stage(stage, action_name):
             return action
     return None
 
+
 def extract_token_if_available(action):
     """
     Extract the approval token from an action if it is available and the action is in progress.
@@ -85,6 +91,7 @@ def extract_token_if_available(action):
     if latest_execution.get('status') == 'InProgress' and 'token' in latest_execution:
         return latest_execution['token']
     return None
+
 
 def get_approval_token(pipeline_name, stage_name, action_name):
     """

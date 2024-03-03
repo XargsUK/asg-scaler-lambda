@@ -7,7 +7,7 @@ from asg_scaler_lambda.asg_scaler import lambda_handler
 @patch('asg_scaler_lambda.asg_scaler.report_job_success')
 def test_lambda_handler_codepipeline_success(mock_report_job_success, mock_update_asg):
     mock_update_asg.return_value = "ASG updated successfully"
-    
+
     event = {
         "CodePipeline.job": {
             "id": "1234",
@@ -25,9 +25,8 @@ def test_lambda_handler_codepipeline_success(mock_report_job_success, mock_updat
             }
         }
     }
-    
+
     response = lambda_handler(event, {})
-    
     assert response['statusCode'] == 200
     assert json.loads(response['body']) == "ASG updated successfully"
     mock_update_asg.assert_called_once_with("test-asg", "1", "2", "3")
@@ -51,9 +50,8 @@ def test_lambda_handler_codepipeline_invalid_user_parameters(mock_report_job_fai
             }
         }
     }
-    
+
     response = lambda_handler(event, {})
-    
     assert response['statusCode'] == 400
     assert json.loads(response['body']) == "Invalid UserParameters format."
     mock_report_job_failure.assert_called_once_with("1234", "Invalid UserParameters format.")
@@ -61,6 +59,7 @@ def test_lambda_handler_codepipeline_invalid_user_parameters(mock_report_job_fai
 ##################################################
 # CodePipeline event with missing user parameters
 ##################################################
+
 @patch('asg_scaler_lambda.asg_scaler.report_job_failure')
 def test_lambda_handler_codepipeline_missing_required_parameters(mock_report_job_failure):
     event = {
@@ -75,17 +74,17 @@ def test_lambda_handler_codepipeline_missing_required_parameters(mock_report_job
             }
         }
     }
-    
+
     response = lambda_handler(event, {})
-    
     assert response['statusCode'] == 400
     assert json.loads(response['body']) == "Missing required parameters."
     mock_report_job_failure.assert_called_once_with("1234", "Missing required parameters.")
 
-
 ##################################################
 # CodePipeline event with update_asg ValueError
 ##################################################
+
+
 @patch('asg_scaler_lambda.asg_scaler.report_job_failure')
 @patch('asg_scaler_lambda.asg_scaler.update_asg', side_effect=ValueError("Validation Error"))
 def test_lambda_handler_codepipeline_update_failure(mock_update_asg, mock_report_job_failure):
@@ -106,9 +105,8 @@ def test_lambda_handler_codepipeline_update_failure(mock_update_asg, mock_report
             }
         }
     }
-    
+
     response = lambda_handler(event, {})
-    
     assert response['statusCode'] == 400
     assert json.loads(response['body']) == "Validation Error: Validation Error"
     mock_report_job_failure.assert_called_once_with("1234", "Validation Error")
@@ -116,6 +114,7 @@ def test_lambda_handler_codepipeline_update_failure(mock_update_asg, mock_report
 ##################################################
 # EventBridge event with successful approval
 ##################################################
+
 
 @patch('asg_scaler_lambda.asg_scaler.approve_action')
 @patch('asg_scaler_lambda.asg_scaler.get_approval_token')
@@ -137,7 +136,6 @@ def test_lambda_handler_eventbridge_success(mock_get_approval_token, mock_approv
     mock_approve_action.return_value = {'statusCode': 200, 'body': 'Approval submitted successfully.'}
 
     response = lambda_handler(event, {})
-
     assert response['statusCode'] == 200
     assert response['body'] == "Approval submitted successfully."
     mock_get_approval_token.assert_called_once_with("test-pipeline", "test-stage", "test-action")
@@ -156,7 +154,6 @@ def test_lambda_handler_eventbridge_no_token(mock_get_approval_token):
     }
 
     response = lambda_handler(event, {})
-
     assert response['statusCode'] == 400
     assert response['body'] == "Approval token not found."
     mock_get_approval_token.assert_called_once_with("test-pipeline", "test-stage", "test-action")
