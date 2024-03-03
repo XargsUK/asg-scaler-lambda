@@ -46,9 +46,8 @@ def update_asg(asg_name, min_capacity, desired_capacity, max_capacity):
         logger.debug(f"Failed to update ASG '{asg_name}': {e}")
         raise ValueError(f"Failed to update ASG '{asg_name}': {e}")
 
+
 def validate_capacities(min_capacity, desired_capacity, max_capacity):
-    
-    
     """
     Validate the ASG capacities to ensure they are logically consistent and non-negative.
 

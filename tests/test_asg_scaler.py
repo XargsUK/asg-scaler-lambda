@@ -35,7 +35,7 @@ def test_lambda_handler_codepipeline_success(mock_report_job_success, mock_updat
 ##################################################
 # CodePipeline event with invalid user parameters
 ##################################################
-    
+
 @patch('asg_scaler_lambda.asg_scaler.report_job_failure')
 def test_lambda_handler_codepipeline_invalid_user_parameters(mock_report_job_failure):
     event = {
@@ -59,6 +59,7 @@ def test_lambda_handler_codepipeline_invalid_user_parameters(mock_report_job_fai
 ##################################################
 # CodePipeline event with missing user parameters
 ##################################################
+
 
 @patch('asg_scaler_lambda.asg_scaler.report_job_failure')
 def test_lambda_handler_codepipeline_missing_required_parameters(mock_report_job_failure):
@@ -140,6 +141,7 @@ def test_lambda_handler_eventbridge_success(mock_get_approval_token, mock_approv
     assert response['body'] == "Approval submitted successfully."
     mock_get_approval_token.assert_called_once_with("test-pipeline", "test-stage", "test-action")
     mock_approve_action.assert_called_once_with("test-pipeline", "test-stage", "test-action", "token123")
+
 
 @patch('asg_scaler_lambda.asg_scaler.get_approval_token', return_value=None)
 def test_lambda_handler_eventbridge_no_token(mock_get_approval_token):
