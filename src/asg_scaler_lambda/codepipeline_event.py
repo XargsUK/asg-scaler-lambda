@@ -1,18 +1,27 @@
 import boto3
 import json
 import logging
+import os
+
+AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 
 # Configure the logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-client = boto3.client('codepipeline')
+def get_codepipeline_client():
+    """
+    Returns a boto3 client for AWS CodePipeline.
+    This function can be modified to dynamically set the region or other client parameters if needed.
+    """
+    return boto3.client('codepipeline', region_name=AWS_REGION)
 
 def report_job_success(job_id):
     """
     Notify AWS CodePipeline of a successful job execution.
     :param job_id: The ID of the CodePipeline job
     """
+    client = get_codepipeline_client()
     try:
         client.put_job_success_result(jobId=job_id)
         logger.debug(f"Job {job_id} reported as success.")
@@ -25,6 +34,7 @@ def report_job_failure(job_id, message):
     :param job_id: The ID of the CodePipeline job
     :param message: The failure message to report back to CodePipeline
     """
+    client = get_codepipeline_client()
     try:
         client.put_job_failure_result(
             jobId=job_id,
@@ -35,6 +45,7 @@ def report_job_failure(job_id, message):
         logger.debug(f"Error reporting job failure for {job_id}: {str(e)}")
 
 def approve_action(pipeline_name, stage_name, action_name, token):
+    client = get_codepipeline_client()
     try:
         response = client.put_approval_result(
             pipelineName=pipeline_name,
@@ -83,6 +94,7 @@ def get_approval_token(pipeline_name, stage_name, action_name):
     :param action_name: The name of the action
     :return: The approval token if found, else None
     """
+    client = get_codepipeline_client()
     try:
         pipeline_state = client.get_pipeline_state(name=pipeline_name)
     except Exception as e:

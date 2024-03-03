@@ -1,7 +1,7 @@
 import json
 import logging
-from library.codepipeline_event import report_job_success, report_job_failure, get_approval_token, approve_action
-from library.asg_helper import update_asg
+from asg_scaler_lambda.codepipeline_event import report_job_success, report_job_failure, get_approval_token, approve_action
+from asg_scaler_lambda.asg_helper import update_asg
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

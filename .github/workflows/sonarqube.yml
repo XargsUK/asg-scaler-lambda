@@ -1,4 +1,4 @@
-name: Build and Analyse
+name: Python Package Workflow
 
 on:
   push:
@@ -6,8 +6,7 @@ on:
       - main
 
 jobs:
-  test-and-coverage:
-    name: Run Tests and Generate Coverage Report
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,33 +14,31 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Install dependencies
+      - name: Install Poetry
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest pytest-cov
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      # - name: Run pytest with coverage
-      #   run: pytest --cov=./ --cov-report=xml
-      # - name: Upload coverage report
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: coverage-report
-      #     path: coverage.xml
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install
+      - name: Run tests with coverage
+        run: |
+          poetry run pytest tests/ --cov=src --cov-report=xml
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
   sonarqube-analysis:
-    name: SonarQube Analysis
-    needs: test-and-coverage
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-      # - name: Download coverage report
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: coverage-report
-      # - name: Adjust paths in coverage report
-      #   run: |
-      #     sed -i 's|/github/workspace/||g' coverage.xml
+          name: coverage-report
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:

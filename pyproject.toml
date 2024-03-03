@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "asg-scaler-lambda"
+version = "0.1.0"
+description = "Scales ASGs and authorises CodePipeline"
+authors = ["XargsUK <51077147+XargsUK@users.noreply.github.com>"]
+maintainers = ["XargsUK <51077147+XargsUK@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/XargsUK/asg-scaler-lambda"
+keywords = ["aws", "lambda", "asg", "autoscaling", "codepipeline", "codedeploy", "scaling"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities"
+]
+packages = [{include = "src"}]
+include = ["LICENSE"]
+
+[tool.poetry.dependencies]
+python = ">=3.7.0"
+boto3 = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+pytest-cov = "*"
+
+[tool.poetry.scripts]
+asg-scaler-lambda = "src.asg_scaler_lambda:lambda_handler"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests"
+]
