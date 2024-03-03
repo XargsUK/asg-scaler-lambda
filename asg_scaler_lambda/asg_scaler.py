@@ -7,6 +7,7 @@ from asg_scaler_lambda.asg_helper import update_asg
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+
 def lambda_handler(event, context):
     logger.info(f"Received event: {event}")
     if 'CodePipeline.job' in event:
@@ -17,9 +18,9 @@ def lambda_handler(event, context):
         logger.warning('Event source not recognised.')
         return {'statusCode': 400, 'body': 'Event source not recognised.'}
 
+
 def handle_codepipeline_event(event):
     job_id = event['CodePipeline.job']['id'] if 'CodePipeline.job' in event else None
-    
     user_parameters_str = event.get('CodePipeline.job', {}).get('data', {}).get('actionConfiguration', {}).get('configuration', {}).get('UserParameters', '{}')
     try:
         user_parameters = json.loads(user_parameters_str)
@@ -29,9 +30,9 @@ def handle_codepipeline_event(event):
         return {'statusCode': 400, 'body': json.dumps('Invalid UserParameters format.')}
 
     params = (
-        user_parameters.get('asgName'), 
-        user_parameters.get('minCapacity'), 
-        user_parameters.get('desiredCapacity'), 
+        user_parameters.get('asgName'),
+        user_parameters.get('minCapacity'),
+        user_parameters.get('desiredCapacity'),
         user_parameters.get('maxCapacity')
     )
 
@@ -54,12 +55,13 @@ def handle_codepipeline_event(event):
         logger.error(f"Error processing CodePipeline job {job_id}: {str(e)}")
         return {'statusCode': 500, 'body': json.dumps(f"Error: {str(e)}")}
 
+
 def handle_eventbridge_event(event):
     logger.info(f"Processing EventBridge event: {event}")
     pipeline_name = event.get('pipelineName')
     stage_name = event.get('stageName')
     action_name = event.get('actionName')
-    
+
     token = get_approval_token(pipeline_name, stage_name, action_name)
     if token:
         result = approve_action(pipeline_name, stage_name, action_name, token)
