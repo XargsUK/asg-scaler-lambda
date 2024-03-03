@@ -6,6 +6,7 @@ authors = ["XargsUK <51077147+XargsUK@users.noreply.github.com>"]
 maintainers = ["XargsUK <51077147+XargsUK@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
+include = [{ path = "tests", format = "sdist" }]
 repository = "https://github.com/XargsUK/asg-scaler-lambda"
 keywords = ["aws", "lambda", "asg", "autoscaling", "codepipeline", "codedeploy", "scaling"]
 classifiers = [
@@ -14,26 +15,24 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Topic :: Software Development :: Libraries",
     "Topic :: Utilities"
 ]
-packages = [{include = "src"}]
-include = ["LICENSE"]
 
 [tool.poetry.dependencies]
-python = ">=3.7.0"
-boto3 = "*"
+python = "^3.8"
+boto3 = "^1.30"
+coverage = "^7.4.3"
 
-[tool.poetry.dev-dependencies]
-pytest = "*"
-pytest-cov = "*"
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.2"
+pytest-cov = "^4.1.0"
 
 [tool.poetry.scripts]
-asg-scaler-lambda = "src.asg_scaler_lambda:lambda_handler"
+asg-scaler-lambda = "asg_scaler_lambda.asg_scaler:lambda_handler"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -41,3 +40,13 @@ addopts = "-ra -q"
 testpaths = [
     "tests"
 ]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.github-actions]
+optional = true
+
+[tool.poetry.group.github-actions.dependencies]
+pytest-github-actions-annotate-failures = "^0.1.7"

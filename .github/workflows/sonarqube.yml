@@ -23,27 +23,10 @@ jobs:
           poetry install
       - name: Run tests with coverage
         run: |
-          poetry run pytest tests/ --cov=src --cov-report=xml
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage.xml
-
-  sonarqube-analysis:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download coverage report
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-report
+          poetry run coverage run -m pytest --junitxml=pytest-report.xml tests
+          poetry run coverage xml -o coverage-pytest.xml
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
-        with:
-          args: >
-            -Dsonar.python.coverage.reportPaths=coverage.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
