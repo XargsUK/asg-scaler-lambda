@@ -1,7 +1,7 @@
 import json
 import logging
 from asg_scaler_lambda.codepipeline_event import (
-    report_job_success, report_job_failure, 
+    report_job_success, report_job_failure,
     get_approval_token, approve_action
 )
 from asg_scaler_lambda.asg_helper import update_asg
@@ -30,7 +30,6 @@ def handle_codepipeline_event(event):
     action_configuration = job_data.get('actionConfiguration', {})
     configuration = action_configuration.get('configuration', {})
     user_parameters_str = configuration.get('UserParameters', '{}')
-
 
     try:
         user_parameters = json.loads(user_parameters_str)

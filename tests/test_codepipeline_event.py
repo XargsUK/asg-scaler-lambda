@@ -1,4 +1,7 @@
-from asg_scaler_lambda.codepipeline_event import report_job_success, report_job_failure, approve_action, get_approval_token, find_action_in_stage, extract_token_if_available
+from asg_scaler_lambda.codepipeline_event import (
+    report_job_success, report_job_failure, approve_action,
+    get_approval_token, find_action_in_stage, extract_token_if_available
+)
 from unittest.mock import patch, MagicMock
 import json
 
