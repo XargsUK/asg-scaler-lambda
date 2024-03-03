@@ -36,6 +36,7 @@ def test_lambda_handler_codepipeline_success(mock_report_job_success, mock_updat
 # CodePipeline event with invalid user parameters
 ##################################################
 
+
 @patch('asg_scaler_lambda.asg_scaler.report_job_failure')
 def test_lambda_handler_codepipeline_invalid_user_parameters(mock_report_job_failure):
     event = {

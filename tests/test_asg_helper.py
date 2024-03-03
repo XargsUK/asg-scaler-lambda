@@ -13,7 +13,7 @@ def test_validate_capacities_positive():
     desired_capacity = 2
     max_capacity = 3
     success, error_message = validate_capacities(min_capacity, desired_capacity, max_capacity)
-    assert success == True
+    assert success
     assert error_message == ""
 
 
@@ -23,7 +23,7 @@ def test_validate_capacities_negative():
     desired_capacity = -2
     max_capacity = -3
     success, error_message = validate_capacities(min_capacity, desired_capacity, max_capacity)
-    assert success == False
+    assert not success
     assert error_message == "Capacity settings cannot be negative."
 
 
@@ -33,7 +33,7 @@ def test_validate_capacities_incompatible():
     desired_capacity = 4
     max_capacity = 3
     success, error_message = validate_capacities(min_capacity, desired_capacity, max_capacity)
-    assert success == False
+    assert not success
     assert error_message == "Incompatible settings: Check your capacity settings."
 
 
@@ -43,7 +43,7 @@ def test_validate_capacities_equal():
     desired_capacity = 3
     max_capacity = 3
     success, error_message = validate_capacities(min_capacity, desired_capacity, max_capacity)
-    assert success == True
+    assert success
     assert error_message == ""
 
 ###########################################
