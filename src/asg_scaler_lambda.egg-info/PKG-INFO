@@ -1,9 +1,0 @@
-Metadata-Version: 2.1
-Name: asg-scaler-lambda
-Version: 0.1.0
-Summary: Scales ASGs and authorises CodePipeline
-Author-email: XargsUK <51077147+XargsUK@users.noreply.github.com>
-License-File: LICENSE
-Requires-Dist: boto3==1.34.50
-Provides-Extra: test
-Requires-Dist: pytest==8.0.2; extra == "test"
