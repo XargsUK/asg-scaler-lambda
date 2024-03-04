@@ -6,6 +6,9 @@ from asg_scaler_lambda.codepipeline_event import (
 )
 from asg_scaler_lambda.asg_helper import update_asg
 
+# Define constant
+CODE_PIPELINE_JOB_KEY = 'CodePipeline.job'
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -13,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def lambda_handler(event, context):
     logger.info(f"Received event: {event}")
-    if 'CodePipeline.job' in event:
+    if CODE_PIPELINE_JOB_KEY in event:
         return handle_codepipeline_event(event)
     elif event.get('source') == 'aws.codedeploy' and event.get('detail', {}).get('state') == 'SUCCESS':
         return handle_eventbridge_event(event)
@@ -23,9 +26,9 @@ def lambda_handler(event, context):
 
 
 def handle_codepipeline_event(event):
-    job_id = event['CodePipeline.job']['id'] if 'CodePipeline.job' in event else None
+    job_id = event[CODE_PIPELINE_JOB_KEY]['id'] if CODE_PIPELINE_JOB_KEY in event else None
 
-    code_pipeline_job = event.get('CodePipeline.job', {})
+    code_pipeline_job = event.get(CODE_PIPELINE_JOB_KEY, {})
     job_data = code_pipeline_job.get('data', {})
     action_configuration = job_data.get('actionConfiguration', {})
     configuration = action_configuration.get('configuration', {})
