@@ -43,7 +43,7 @@
 
 ##  Overview
 
-`asg-scaler` simplifies AWS Auto Scaling Groups (ASGs) management for CodePipeline deployments, enabling efficient blue/green deployment strategies without requiring excess instances. Traditionally, ASGs aim to maintain a fixed capacity, complicating blue/green deployments as they necessitate doubling the instance count temporarily. asg-scaler resolves this by dynamically adjusting ASG capacities to match the deployment phase, increasing for new deployments and reverting once stability is achieved.
+`asg-scaler` simplifies AWS Auto Scaling Groups (ASGs) management for CodePipeline CodeDeploy deployments, enabling efficient blue/green deployment strategies without requiring excess instances. Traditionally, ASGs aim to maintain a fixed capacity, complicating blue/green deployments as they necessitate doubling the instance count temporarily. asg-scaler resolves this by dynamically adjusting ASG capacities to match the deployment phase, increasing for new deployments and reverting once stability is achieved.
 
 
 ---
