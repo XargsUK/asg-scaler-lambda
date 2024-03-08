@@ -66,6 +66,11 @@ jobs:
           fetch-depth: 0
           ref: "prerelease/v${{ github.event.inputs.version }}"
 
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Install dependencies with Poetry
         run: poetry install
 
