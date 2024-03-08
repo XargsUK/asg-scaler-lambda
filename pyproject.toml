@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "asg-scaler-lambda"
-version = "0.1.1"
+version = "0.1.4"
 description = "Scales ASGs and authorises CodePipeline"
 authors = [ "XargsUK <51077147+XargsUK@users.noreply.github.com>",]
 maintainers = [ "XargsUK <51077147+XargsUK@users.noreply.github.com>",]

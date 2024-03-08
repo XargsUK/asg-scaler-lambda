@@ -1,0 +1,2 @@
+./.github/scripts/update_version.py:4:1: E302 expected 2 blank lines, found 1
+./.github/scripts/update_version.py:13:1: E305 expected 2 blank lines after class or function definition, found 1
