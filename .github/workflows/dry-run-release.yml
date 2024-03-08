@@ -8,7 +8,7 @@ on:
 
 jobs:
   BuildTest:
-    name: "Dry run Release v${{ github.event.inputs.version }}"
+    name: "Test/Build v${{ github.event.inputs.version }}"
     if: ${{ github.repository_owner == 'XargsUK' }}
     runs-on: ubuntu-latest
     steps:
@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'main'
+
+      - name: Create Release Branch
+        run: git checkout -b release/v${{ github.event.inputs.version }}
 
       - name: Install Poetry
         run: |
@@ -44,38 +47,15 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
+      - name: Build with Poetry
+        run: poetry build
+
       - name: Commit & tag version bump in Git
         uses: EndBug/add-and-commit@v9
         with:
           add: "pyproject.toml"
-          message: "Bump version to ${{ github.event.inputs.version }}-prerelease"
-          tag: "v${{ github.event.inputs.version }}-prerelease"
-          new_branch: "prerelease/v${{ github.event.inputs.version }}"
-          tag_push: '--force'
-          committer_name: GitHub Actions
-          committer_email: 41898282+github-actions[bot]@users.noreply.github.com
-
-  Release:
-    name: "Dry run Release v${{ github.event.inputs.version }}"
-    if: ${{ github.repository_owner == 'XargsUK' }}
-    runs-on: ubuntu-latest
-    needs: BuildTest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: "prerelease/v${{ github.event.inputs.version }}"
-
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies with Poetry
-        run: poetry install
-
-      - name: Build with Poetry
-        run: poetry build
+          message: "Bump version to ${{ github.event.inputs.version }}"
+          tag: "v${{ github.event.inputs.version }}"
 
       - name: Publish package to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -83,14 +63,3 @@ jobs:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
           verbose: true
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: prerelease/v${{ github.event.inputs.version }}
-          commit-message: "Bump version to ${{ github.event.inputs.version }}"
-          title: "prerelease v${{ github.event.inputs.version }}"
-          body: "This PR includes changes for the new release `v${{ github.event.inputs.version }}`."
-          base: main
-          delete-branch: false
-          assignees: XargsUK
