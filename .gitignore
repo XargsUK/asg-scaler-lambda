@@ -42,3 +42,6 @@ pip-wheel-metadata
 /poetry.toml
 
 poetry/core/*
+
+.scannerwork/.sonar_lock
+.scannerwork/report-task.txt
