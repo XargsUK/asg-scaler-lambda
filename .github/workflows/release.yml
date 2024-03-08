@@ -7,7 +7,7 @@ on:
         required: true
 
 jobs:
-  dry-run-release:
+  release:
     name: "PyPI release v${{ github.event.inputs.version }}"
     if: ${{ github.repository_owner == 'XargsUK' }}
     runs-on: ubuntu-latest

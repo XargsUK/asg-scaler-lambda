@@ -7,8 +7,13 @@ on:
         required: true
 
 jobs:
+<<<<<<< Updated upstream
   dry-run-release:
     name: "Dry run Release v${{ github.event.inputs.version }}"
+=======
+  BuildTest:
+    name: "Test/Build v${{ github.event.inputs.version }}"
+>>>>>>> Stashed changes
     if: ${{ github.repository_owner == 'XargsUK' }}
     runs-on: ubuntu-latest
     steps:
@@ -57,16 +62,20 @@ jobs:
           message: "Bump version to ${{ github.event.inputs.version }}"
           tag: "v${{ github.event.inputs.version }}"
 
+<<<<<<< Updated upstream
       - name: Push Changes
         run: |
           git push --set-upstream origin release/v${{ github.event.inputs.version }}
 
+=======
+>>>>>>> Stashed changes
       - name: Publish package to TestPyPI
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
+<<<<<<< Updated upstream
           verbose: true
 
       - name: Create Pull Request
@@ -78,3 +87,6 @@ jobs:
           body: "This PR includes changes for the new release `v${{ github.event.inputs.version }}`."
           base: main
           delete-branch: false
+=======
+          verbose: true
+>>>>>>> Stashed changes

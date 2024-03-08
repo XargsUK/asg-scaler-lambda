@@ -1,7 +1,18 @@
 name: "Build on push"
 on:
   push:
+    branches:
+      - dev
+      - dev/*
+      - feat
+      - feat/*
+      - fix
+      - fix/*
+      - hotfix
+      - hotfix/*
   pull_request:
+    branches:
+      - main
 
 jobs:
   build:
