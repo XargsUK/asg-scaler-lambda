@@ -17,9 +17,6 @@ jobs:
           fetch-depth: 0
           ref: 'main'
 
-      - name: Create Release Branch
-        run: git checkout -b release/v${{ github.event.inputs.version }}
-
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
@@ -54,12 +51,10 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: "pyproject.toml"
-          message: "Bump version to ${{ github.event.inputs.version }}"
-          tag: "v${{ github.event.inputs.version }}"
-
-      - name: Push Changes
-        run: |
-          git push -u --set-upstream origin release/v${{ github.event.inputs.version }}
+          message: "Bump version to ${{ github.event.inputs.version }}-prerelease"
+          tag: "v${{ github.event.inputs.version }}-prerelease"
+          new_branch: "prerelease/v${{ github.event.inputs.version }}"
+          tag_push: '--force'
 
       - name: Publish package to TestPyPI
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
@@ -72,9 +67,10 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: release/v${{ github.event.inputs.version }}
+          branch: prerelease/v${{ github.event.inputs.version }}
           commit-message: "Bump version to ${{ github.event.inputs.version }}"
-          title: "Release v${{ github.event.inputs.version }}"
+          title: "prerelease v${{ github.event.inputs.version }}"
           body: "This PR includes changes for the new release `v${{ github.event.inputs.version }}`."
           base: main
           delete-branch: false
+          assignees: XargsUK
