@@ -51,7 +51,6 @@ jobs:
       - name: Commit & tag version bump in Git
         uses: EndBug/add-and-commit@v9
         with:
-          add: "pyproject.toml"
           message: "Bump version to ${{ github.event.inputs.version }}-prerelease"
           tag: "v${{ github.event.inputs.version }}-prerelease"
           new_branch: "prerelease/v${{ github.event.inputs.version }}"
