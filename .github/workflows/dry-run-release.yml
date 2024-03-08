@@ -65,7 +65,10 @@ jobs:
         with:
           fetch-depth: 0
           ref: "prerelease/v${{ github.event.inputs.version }}"
-      
+
+      - name: Install dependencies with Poetry
+        run: poetry install
+
       - name: Build with Poetry
         run: poetry build
 
