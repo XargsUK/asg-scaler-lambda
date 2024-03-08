@@ -44,9 +44,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      - name: Build with Poetry
-        run: poetry build
-
       - name: Commit & tag version bump in Git
         uses: EndBug/add-and-commit@v9
         with:
@@ -68,6 +65,10 @@ jobs:
         with:
           fetch-depth: 0
           ref: "prerelease/v${{ github.event.inputs.version }}"
+      
+      - name: Build with Poetry
+        run: poetry build
+
       - name: Publish package to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
